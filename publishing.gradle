@@ -1,0 +1,47 @@
+publishing {
+
+    repositories {
+
+        if(project.version.toLowerCase().contains("snapshot")) {
+            println project.version
+            maven {
+                name "appcreationSnapshots"
+
+                url "http://192.168.180.16:11080/snapshots"
+
+                credentials {
+                    username = mavenUsername
+                    password = mavenPassword
+                }
+                authentication {
+                    basic(BasicAuthentication)
+                }
+                allowInsecureProtocol = true
+            }
+        } else {
+            println project.version
+            maven {
+                name "appcreationReleases"
+
+                url "http://192.168.180.16:11080/releases"
+
+                credentials {
+                    username = mavenUsername
+                    password = mavenPassword
+                }
+                authentication {
+                    basic(BasicAuthentication)
+                }
+                allowInsecureProtocol = true
+            }
+        }
+
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+}

@@ -1,0 +1,70 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+}
+
+group 'de.olafj'
+version '1.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+apply from: './git.gradle'
+
+repositories {
+    mavenCentral()
+
+    maven {
+        name "appcreationSnapshots"
+        url "http://192.168.180.16:11080/snapshots"
+        allowInsecureProtocol = true
+    }
+    maven {
+        name "appcreationReleases"
+        url "http://192.168.180.16:11080/releases"
+        allowInsecureProtocol = true
+    }
+
+}
+
+apply from: './publishing.gradle'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation "com.vaadin:vaadin-upload-flow"
+    implementation "com.vaadin:flow-server"
+
+
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom  "com.vaadin:vaadin-bom:$vaadinVersion"
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes("Built-By": System.getProperty("user.name"))
+        attributes(["Specification-Title": project.name,
+                    "Specification-Version": project.version,
+                    "Implementation-Title": project.name,
+                    "Implementation-Version": 1,
+                    "Implementation-Vendor" :"AppCreation GmbH",
+                    "Vaadin-Version": project.ext.vaadinVersion
+        ])
+    }
+}
