@@ -1,6 +1,7 @@
 package de.olafj.vaadin.extendedvaadinuploadflow;
 
 import com.vaadin.flow.component.upload.Receiver;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +17,10 @@ public class TempFileBuffer implements Receiver {
     @Override
     public OutputStream receiveUpload(String fileName, String mimeType) {
 
-        final String tempFileName = "upload_tmpfile_" + fileName + "_"
-                + System.currentTimeMillis();
+        final String tempFileName = ("upload_tmpfile_" + System.currentTimeMillis()).replace(".", "_") + "_" + fileName;
+        var ext = FilenameUtils.getExtension(fileName);
         try {
-            var file = File.createTempFile(tempFileName, null);
+            var file = File.createTempFile(tempFileName, "." + ext);
             this.fileInfo = new FileInfo(file, fileName, mimeType);
             return Files.newOutputStream(file.toPath());
         } catch (IOException e) {
