@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.function.Consumer;
 
-class BindableSingleFileUpload extends CustomField<File> {
+public class BindableSingleFileUpload extends CustomField<File> {
 
-    private static Logger LOG = LoggerFactory.getLogger(BindableSingleFileUpload.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BindableSingleFileUpload.class);
 
     private final FileUpload fileUpload;
     private final TempFileBuffer tempFileBuffer;
