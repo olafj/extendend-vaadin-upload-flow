@@ -1,17 +1,17 @@
 package de.olafj.vaadin.extendedvaadinuploadflow.experimental;
 
 import com.vaadin.flow.component.customfield.CustomField;
+import de.olafj.vaadin.extendedvaadinuploadflow.FileInfo;
 import de.olafj.vaadin.extendedvaadinuploadflow.FileUpload;
 import de.olafj.vaadin.extendedvaadinuploadflow.TempFileBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.function.Consumer;
 
-public class BindableSingleFileUpload extends CustomField<File> {
+public class BindableSingleFileUpload extends CustomField<FileInfo> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BindableSingleFileUpload.class);
 
@@ -25,7 +25,7 @@ public class BindableSingleFileUpload extends CustomField<File> {
         fileUpload.setReceiver(tempFileBuffer);
 
         fileUpload.addSucceededListener(event -> {
-            this.setValue(tempFileBuffer.getFileInfo().getFile());
+            this.setValue(tempFileBuffer.getFileInfo());
         });
 
         fileUpload.addRemoveListener(event -> {
@@ -44,24 +44,25 @@ public class BindableSingleFileUpload extends CustomField<File> {
     }
 
     @Override
-    protected File generateModelValue() {
-        return tempFileBuffer.getFileInfo().getFile();
+    protected FileInfo generateModelValue() {
+        return tempFileBuffer.getFileInfo();
     }
 
     @Override
-    protected void setPresentationValue(File newPresentationValue) {
+    protected void setPresentationValue(FileInfo newPresentationValue) {
         if(newPresentationValue == null) return;
         try {
 
             if(!tempFileBuffer.hasFile()) {
-                tempFileBuffer.receiveUpload(newPresentationValue.getName(), Files.probeContentType(newPresentationValue.toPath()))
-                        .write(Files.readAllBytes(newPresentationValue.toPath()));
-
-                this.fileUpload.getElement().executeJs("this.files = [new File([], '" +  tempFileBuffer.getFileInfo().getOriginalName() + "', {" +
-                        "  type: '" + tempFileBuffer.getFileInfo().getMimeType() + "', " +
-                        "  complete: true" +
-                        "})]");
+                tempFileBuffer.receiveUpload(newPresentationValue.getOriginalName(), Files.probeContentType(newPresentationValue.getFile().toPath()))
+                        .write(Files.readAllBytes(newPresentationValue.getFile().toPath()));
             }
+
+            this.fileUpload.getElement().executeJs("this.files = [new File([], '" +  tempFileBuffer.getFileInfo().getOriginalName() + "', {" +
+                    "  type: '" + tempFileBuffer.getFileInfo().getMimeType() + "', " +
+                    "  complete: true" +
+                    "})]");
+
 
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
